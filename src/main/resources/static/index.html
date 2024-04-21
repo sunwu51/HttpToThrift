@@ -18,7 +18,9 @@
 </head>
 <body>
     <div style="width: 80vw; margin: 10px auto">
-        <fw-select id="service-input" label="Service" required="true" placeholder="Select RPC service"></fw-select>
+        <fw-select id="service-input" label="Service" required="true" placeholder="Select RPC service">
+            <fw-select-option value="aaa">aaaaaa</fw-select-option>
+        </fw-select>
         <fw-select id="function-input" label="Method" required="true" placeholder="Select Method after service is selected"></fw-select>
         <div style="display: flex; --fw-input-border-radius: 0px 0px 0px 0px; --fw-select-border-radius: 0px 4px 4px 0px;">
             <fw-input id="ip-input" style="width: 500px;" label="IP" value="127.0.0.1" clear-input></fw-input>
@@ -47,12 +49,14 @@
         var sendBtn = document.getElementById("send-btn");
         // 轮训
         setInterval(async ()=>{
-            try {
-                // 轮训服务列表
-                var res = await fetch('/className')
-                var classNames = await res.json()
-                serviceInput.
-            }
+            // try {
+            //     // 轮训服务列表
+            //     var res = await fetch('/className')
+            //     var classNames = await res.json()
+            //     serviceInput.innerHTML = classNames.map(c=> `<fw-select-option value="${c}">${c}</fw-select-option>`).join("\n")
+            // } catch (e) {
+
+            // }
         }, 1000)
     </script>
 </body>

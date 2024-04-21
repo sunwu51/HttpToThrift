@@ -79,12 +79,9 @@ public class RpcController {
     }
 
 
-    @RequestMapping("/upload")
-    public ResponseEntity<String> upload(@RequestParam String uid, @RequestParam String fileType, @RequestParam("file") MultipartFile file) throws IOException {
-        System.out.println(uid);
-        System.out.println(fileType);
-        System.out.println(file.getName());
-        System.out.println(new String(file.getBytes()));
+    @RequestMapping("/reload")
+    public ResponseEntity<String> reload() throws Exception {
+        clientLoader.loadAll();
         return ResponseEntity.ok("ok");
     }
 }
