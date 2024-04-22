@@ -4,23 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script
-            type="module"
-            src="https://cdn.jsdelivr.net/npm/@freshworks/crayons@v4/dist/crayons/crayons.esm.js"
-    ></script>
-    <script
-            nomodule
-            src="https://cdn.jsdelivr.net/npm/@freshworks/crayons@v4/dist/crayons/crayons.js"
-    ></script>
-
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@freshworks/crayons@v4/dist/crayons/crayons.js"></script>
     <link href="./jsoneditor.min.css" rel="stylesheet" type="text/css">
     <script src="./jsoneditor.min.js"></script>
 </head>
 <body>
     <div style="width: 80vw; margin: 10px auto">
-        <fw-select id="service-input" label="Service" required="true" placeholder="Select RPC service">
-            <fw-select-option value="aaa">aaaaaa</fw-select-option>
-        </fw-select>
+        <fw-select id="service-input" label="Service" required="true" placeholder="Select RPC service"> </fw-select>
         <fw-select id="function-input" label="Method" required="true" placeholder="Select Method after service is selected"></fw-select>
         <div style="display: flex; --fw-input-border-radius: 0px 0px 0px 0px; --fw-select-border-radius: 0px 4px 4px 0px;">
             <fw-input id="ip-input" style="width: 500px;" label="IP" value="127.0.0.1" clear-input></fw-input>
@@ -47,17 +37,66 @@
         var ipInput = document.getElementById("ip-input");
         var portInput = document.getElementById("port-input");
         var sendBtn = document.getElementById("send-btn");
-        // 轮训
-        setInterval(async ()=>{
-            // try {
-            //     // 轮训服务列表
-            //     var res = await fetch('/className')
-            //     var classNames = await res.json()
-            //     serviceInput.innerHTML = classNames.map(c=> `<fw-select-option value="${c}">${c}</fw-select-option>`).join("\n")
-            // } catch (e) {
 
-            // }
+        functionInput.addEventListener('fwChange', async (e) => {
+            var f = e.target.value;
+            if (!f) return;
+            var mockRes = await fetch('/className');
+            var mock = await mockRes.json();
+            reqEditor.set(mock);
+        });
+
+        sendBtn.addEventListener("fwClick", async (e)=>{
+            var service = serviceInput.value;
+            var functionName = functionInput.value;
+            var ip = ipInput.value;
+            var port = portInput.value;
+            var req = reqEditor.get();
+            var res = await fetch(`/className/${service}/functionName/{functionName}`)
+            var json = await res.json();
+            resEditor.set(json);
+        })
+
+        setInterval(async ()=>{
+            try {
+                await updateClassNames();
+                await updateFunctions();
+            } catch (e) {
+                serviceInput.options = []
+                functionInput.options =[]
+            }
         }, 1000)
+
+        var classNames = [], functions = [];
+        async function updateClassNames() {
+            var classRes = await fetch('/className')
+            var _classNames = await classRes.json()
+            if (!stringArrayEquals(classNames, _classNames)) {
+                classNames = _classNames;
+                serviceInput.options = classNames.map(c=>({text: c, value: c}));
+            }
+        }
+
+        async function updateFunctions() {
+            var service = serviceInput.value;
+            if (!service) return;
+            var funcRes = await fetch(`/className/${service}`)
+            var _functions = await funcRes.json()
+            if (!stringArrayEquals(_functions, functions)) {
+                functions = _functions;
+                functionInput.options = functions.map(f => ({text: f, value: f}));
+            }
+        }
+
+        function stringArrayEquals(arr1, arr2) {
+            if (arr1.length != arr2.length) return false;
+            for (let i = 0; i < arr1.length; i++) {
+                if (arr1[i]!= arr2[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
     </script>
 </body>
 </html>
