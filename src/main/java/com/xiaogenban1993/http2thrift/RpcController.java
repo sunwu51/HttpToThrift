@@ -83,7 +83,7 @@ public class RpcController {
 
     @RequestMapping("/reload")
     public ResponseEntity<String> reload() throws Exception {
-        clientLoader.loadAll();
+        clientLoader.load();
         return ResponseEntity.ok("ok");
     }
 }

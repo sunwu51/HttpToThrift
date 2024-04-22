@@ -12,7 +12,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -29,8 +34,7 @@ public class ClientLoader {
 
     URLClassLoader classLoader;
 
-    @PostConstruct
-    public synchronized void loadAll() throws Exception {
+    private void loadAll() throws Exception {
         if (classLoader != null) classLoader.close();
         // services目录下所有的jar包下中，SPI注入的ThriftClientFactory。
         classLoader = loadJars("./services");
@@ -149,4 +153,39 @@ public class ClientLoader {
         }
         return new URLClassLoader(urls);
     }
+
+	public synchronized void load() throws Exception {
+		log.info("Start to load thrift files");
+        // 创建一个ProcessBuilder实例
+        ProcessBuilder builder = new ProcessBuilder();
+        builder.directory(new File("./"));
+        builder.command("/bin/sh", "-c", "./gen.sh"); // 设置要运行的命令
+
+        try {
+            Process process = builder.start(); // 启动进程
+
+            // 获取输入流
+            InputStream is = process.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            // 读取命令的输出
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            // 等待进程结束
+            int exitCode = process.waitFor();
+            System.out.println("Maven package completed with exit code " + exitCode);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+		try {
+			Thread.sleep(1000L);
+			loadAll();
+			log.info("Load thrift files finish");
+		} catch (Exception e) {
+			log.error("Error loading", e);
+		}
+	}
 }

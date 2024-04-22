@@ -9,9 +9,9 @@ for filename in "${filenames[@]}"; do
   class_name=`grep '^service' "$filename" | awk -F '({| )+' '{print $(NF-1)}'`
 
   echo "detect project: "$project
-  cd $pwd && mkdir -p _mvnprojects/$project/src/main/thrift && rm -rf _mvnprojects/$project/src/main/thrift/* && \
+  mkdir -p _mvnprojects/$project/src/main/thrift && rm -rf _mvnprojects/$project/src/main/thrift/* && \
     mkdir -p _mvnprojects/$project/src/main/resources/META-INF/services && cp -rf $dir* _mvnprojects/$project/src/main/thrift
   echo $package.$class_name\$Client\$Factory > _mvnprojects/$project/src/main/resources/META-INF/services/org.apache.thrift.TServiceClientFactory
   cat template.xml | awk -v project="$project" '{gsub(/\$\{ARTIFACTID\}/, project); print}' > _mvnprojects/$project/pom.xml
-  cd _mvnprojects/$project && mvn package  && mv -f target/$project-0.0.1-SNAPSHOT.jar $pwd"services"
+  mvn -f _mvnprojects/$project/pom.xml package  && mv -f _mvnprojects/$project/target/$project-0.0.1-SNAPSHOT.jar services
 done

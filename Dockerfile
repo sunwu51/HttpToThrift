@@ -34,4 +34,4 @@ COPY --from=builder2 /code/template.xml /workspace/
 WORKDIR /workspace
 RUN mkdir -p app && mkdir -p services
 VOLUME [ "/app" ]
-CMD [ "java", "-jar", "HttpToThrift-0.0.1-SNAPSHOT.jar"]
+CMD [ "java", "-cp", "HttpToThrift-0.0.1-SNAPSHOT.jar:.", "com.xiaogenban1993.http2thrift.Application"]
