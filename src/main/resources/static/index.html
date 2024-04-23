@@ -60,20 +60,29 @@
             }
         })
         sendBtn.addEventListener("fwClick", async (e)=>{
-            var service = serviceInput.value;
-            var functionName = functionInput.value;
-            var ip = ipInput.value;
-            var port = portInput.value;
-            var req = reqEditor.get();
-            var res = await fetch(`/invoke/${ip}:${port}/${service}/${functionName}`,{
-                headers:{
-                    'content-type': "application/json"
-                },
-                method:"POST",
-                body:JSON.stringify(reqEditor.get()),
-            })
-            var json = await res.json();
-            resEditor.set(json);
+            try {
+                var service = serviceInput.value;
+                var functionName = functionInput.value;
+                var ip = ipInput.value;
+                var port = portInput.value;
+                var req = reqEditor.get();
+                if (service.length == 0 || functionName.length == 0 || ip.length == 0 || port.length == 0 || req.length == 0) {
+                    alert("Params should not be empty");
+                    return;
+                }
+                sendBtn.disabled = true;
+                var res = await fetch(`/invoke/${ip}:${port}/${service}/${functionName}`,{
+                    headers:{
+                        'content-type': "application/json"
+                    },
+                    method:"POST",
+                    body:JSON.stringify(reqEditor.get()),
+                })
+                var json = await res.json();
+                resEditor.set(json);
+            }finally {
+                sendBtn.disabled = false;
+            }
         })
 
         setInterval(async ()=>{

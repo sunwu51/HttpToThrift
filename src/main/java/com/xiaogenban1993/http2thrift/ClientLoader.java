@@ -34,7 +34,8 @@ public class ClientLoader {
 
     URLClassLoader classLoader;
 
-    private void loadAll() throws Exception {
+    @PostConstruct
+    public void loadAll() throws Exception {
         if (classLoader != null) classLoader.close();
         // services目录下所有的jar包下中，SPI注入的ThriftClientFactory。
         classLoader = loadJars("./services");
@@ -181,7 +182,6 @@ public class ClientLoader {
             e.printStackTrace();
         }
 		try {
-			Thread.sleep(1000L);
 			loadAll();
 			log.info("Load thrift files finish");
 		} catch (Exception e) {
