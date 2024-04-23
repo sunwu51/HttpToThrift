@@ -1,6 +1,6 @@
 #!/bin/bash
 pwd=`pwd`"/"
-filenames=($(grep -r "^service " app/*/*.thrift  | awk -F ":" '{print $1}'))
+filenames=($(grep -H -r "^service " app/*/*.thrift  | awk -F ":" '{print $1}'))
 
 for filename in "${filenames[@]}"; do
   dir=`echo $filename | awk -F "/" '{for(i=1;i<NF;i++) str=str$i"/"}END{print str}'`
